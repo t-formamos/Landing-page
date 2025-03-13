@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        form { max-width: 400px; margin: auto; padding: 20px; background: #f4f4f4; }
+        input, button { display: block; width: 100%; margin: 10px 0; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Regístrate en el Curso</h1>
+    <form id="miFormulario">
+        <input type="text" name="nombre" placeholder="Tu Nombre" required>
+        <input type="email" name="email" placeholder="Tu Email" required>
+        <input type="tel" name="telefono" placeholder="Tu Teléfono">
+        <button type="submit">Enviar</button>
+    </form>
+    <p id="mensaje"></p>
+
+    <script>
+        document.getElementById("miFormulario").addEventListener("submit", function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            let data = {};
+            formData.forEach((value, key) => { data[key] = value });
+
+            fetch("https://script.google.com/macros/s/TU_SCRIPT_ID/exec", {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            }).then(() => {
+                document.getElementById("mensaje").textContent = "Formulario enviado con éxito!";
+            }).catch(error => {
+                document.getElementById("mensaje").textContent = "Error al enviar.";
+            });
+        });
+    </script>
+</body>
+</html>

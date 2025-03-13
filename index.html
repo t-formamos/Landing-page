@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Registro</title>
+    <title>Landing Page Industria</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         form { max-width: 400px; margin: auto; padding: 20px; background: #f4f4f4; border-radius: 8px; }
@@ -26,7 +26,7 @@
         <input type="email" id="confirmarEmail" required>
 
         <label>Teléfono*</label>
-        <input type="tel" name="telefono" id="telefono" required pattern="^[6-9][0-9]{8}$" title="Debe ser un número español válido (9 dígitos, empieza por 6, 7, 8 o 9)">
+        <input type="tel" name="telefono" id="telefono" value="+34 " required pattern="^\+\d{1,3} \d{9}$" title="Debe incluir prefijo internacional y 9 dígitos">
 
         <label>Provincia</label>
         <select name="provincia">
@@ -48,7 +48,7 @@
 
         <label>¿Desea que le llamemos?</label>
         <input type="radio" name="llamada" value="Si" id="llamarSi"> Sí
-        <input type="radio" name="llamada" value="No" id="llamarNo" checked> No
+        <input type="radio" name="llamada" value="No" id="llamarNo"> No
 
         <div id="llamadaOpciones" class="hidden">
             <label>¿A qué hora le viene bien que le llamemos?</label>
@@ -74,12 +74,20 @@
     <p id="mensaje"></p>
 
     <script>
-        document.getElementById("llamarSi").addEventListener("click", function() {
-            document.getElementById("llamadaOpciones").classList.remove("hidden");
+        const telefonoInput = document.getElementById("telefono");
+
+        // Evitar que se borre el prefijo
+        telefonoInput.addEventListener("input", function() {
+            if (!this.value.startsWith("+34 ")) {
+                this.value = "+34 ";
+            }
         });
 
-        document.getElementById("llamarNo").addEventListener("click", function() {
-            document.getElementById("llamadaOpciones").classList.add("hidden");
+        // Manejo de radio buttons para mostrar/ocultar campos adicionales
+        document.querySelectorAll("input[name='llamada']").forEach(radio => {
+            radio.addEventListener("change", function() {
+                document.getElementById("llamadaOpciones").classList.toggle("hidden", this.value === "No");
+            });
         });
 
         document.getElementById("miFormulario").addEventListener("submit", function(e) {
@@ -93,16 +101,16 @@
                 return;
             }
 
+            // Generar un ID único
+            let idEnvio = "ID" + Date.now();
+
             // Capturar los datos del formulario
             let formData = new FormData(this);
-            let data = {};
+            let data = { id: idEnvio };
             formData.forEach((value, key) => { data[key] = value });
 
             // Si NO quiere llamada, eliminar los campos de hora y día
-            if (!document.getElementById("llamadaOpciones").classList.contains("hidden")) {
-                data["hora"] = formData.get("hora");
-                data["dia"] = formData.get("dia");
-            } else {
+            if (document.getElementById("llamadaOpciones").classList.contains("hidden")) {
                 delete data["hora"];
                 delete data["dia"];
             }
@@ -116,7 +124,7 @@
             }).then(() => {
                 document.getElementById("mensaje").textContent = "Formulario enviado con éxito!";
                 document.getElementById("miFormulario").reset();
-                document.getElementById("llamadaOpciones").classList.add("hidden"); // Ocultar campos después de enviar
+                document.getElementById("llamadaOpciones").classList.add("hidden");
             }).catch(error => {
                 document.getElementById("mensaje").textContent = "Error al enviar.";
             });
@@ -125,3 +133,4 @@
 
 </body>
 </html>
+
